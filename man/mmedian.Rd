@@ -4,13 +4,10 @@
 \alias{mmedian}
 \title{Median of multidimensional data}
 \usage{
-mmedian(x, na.rm = FALSE, metric = "euclidean", q = 3, simple1d = TRUE,
-  ...)
+mmedian(x, metric = "euclidean", q = 3, simple1d = TRUE, ...)
 }
 \arguments{
 \item{x}{a matrix, data frame or vector of data points (a vector will be understood as 1D data, equivalent to a 1-column matrix). Rows with NA values will be dropped.}
-
-\item{na.rm}{boolean, whether or not to drop rows (or elements, if 1D vector) in \code{x} that contain NAs.}
 
 \item{metric}{a choice of 'euclidean','maximum','manhattan','canberra','minkowski', or 'binary'. Can be abbreviated to first three letters, case-insensitive.}
 

@@ -13,7 +13,7 @@ impute(x, flag = NULL, fill = "mean", thresh = 1.5, nmax = NULL,
 \item{flag}{a boolean or integer (0-or-1) vector flagging outliers, such as produced by the function \code{flag}. If NULL, further arguments will be used to compute it here by calling \code{flag}.}
 
 \item{fill}{method for imputing (or removing) outliers. If numeric or NA, it is the value that will replace the outliers. It the data is K-dimensional, \code{fill} is expected to be a vector of length K. If longer, the first K components will be used, and if shorter, the vector will be extended by NAs.
-Alternatively, \code{fill} can be a character string. Values 'mean' and 'median' replace outliers with the mean or (multidimensional) median of the rest of the remaining data,
+Alternatively, \code{fill} can be a character string. Values 'mean' and 'median' replace outliers with the mean or (multidimensional) median of the rest of the remaining data, 'random' generates random replacement values drawn from the estimated probability distribution of the non-outlier data-points,
 'remove' removes the outliers by calling the function \code{purge}. Can be abbreviated to the first 3 letters, case-insensitive.}
 
 \item{thresh}{passed to the function \code{flag} if the argument 'flag' is NULL or missing}

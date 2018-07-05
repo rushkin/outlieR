@@ -3,10 +3,14 @@
 #' Flag outliers in a multidimensional data set
 #'
 #' @param x a matrix, data frame or vector of data points (a vector will be understood as 1D data, equivalent to a 1-column matrix). Each row is a data point and each column is a dimension. NA values are allowed and will produce NAs in the output.
-#' @param thresh threshold for the outlier factor above which the data point is flagged as an outlier. The outlier factor is the LOF for the LOF method and the "1+odds of outlying" for the Chauvenet method
+#' @param level threshold for finding outliers. Meant to be from 0 to 1. Smaller values mean a higher bar for outliers and so typically detect fewer outliers.
+#' For probabilistic methods (such as based on normal distribution), it is the significance level. For LOF, we set the LOF threshold to \code{1/level -1}.
+#' \code{level=0} will flag no outliers. LOF method with \code{level=1} will flag all points as outliers (or as many as \code{nmax} allows).
+#' Note however, that Grubbs method may still leave some points unflagged even with \code{level=1}.
 #' @param nmax the maximum number of outliers to remove. If NULL, ignored.
 #' @param side if set to 'left', 'right' or 'both' (can be abreviated to one letter and case-insensitive) will flag only the outliers on the left, right or both ends of the 1D distribution. If NULL, all outliers will be flagged. If the data is not 1D, \code{side} will be ignored. Note that for the methods that only find outliers on the sides of the distribution (e.g Chauvenet) NULL and 'both' give equivalent results.
-#' @param crit criterion to use for identifying outliers. Currently, can be either 'lof' or 'chauvenet'. Can be abbreviated to 3 first letters, case-insentitive
+#' @param crit criterion to use for identifying outliers. Currently, can be either 'LOF' or 'Grubbs'. Can be abbreviated to 3 first letters, case-insentitive. If 'Grubbs',
+#' the 1D Grubbs method will be applied along each principal axis of the data and points deemed outliers along at least one axis will be flagged.
 #' @param asInt if TRUE, the flag values will be integers (1 for outlier and 0 otherwise). If FALSE, boolean
 #' @param k number of nearest neighbors for the LOF calculation
 #' @param metric distance metric to use. This must be one of "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski". Any unambiguous substring can be given.
@@ -15,56 +19,104 @@
 #' @return a boolean or integer (depending on \code{asInt}) vector of the same length as the number of points in the data, containing 1 (TRUE) if a data point is an outlier, 0 (FALSE) if it is not and NA if a point in the data contained NA value(s), the
 #' @export
 
-flag=function(x, thresh=1.5, nmax=NULL, side=NULL, crit='lof', asInt=TRUE, k=5, metric='euclidean', q=3){
-  critallowed=c('LOF','Chauvenet')
+flag=function(x, level=0.5, nmax=NULL, side=NULL, crit='lof', asInt=TRUE, k=5, metric='euclidean', q=3){
+  critallowed=c('LOF','Grubbs')
   crit=tolower(substr(crit,1,3))
+
+  if(!is.null(side)){
+    side=tolower(substr(side,1,1))
+    if(!(side %in% c('l','r'))) side='b'
+  }
 
   if(!(crit %in% tolower(substr(critallowed,1,3)))){
     cat('Outlier criterion (argument "crit") not recognized.\nAllowed criteria:',paste(critallowed,collapse=', '),'\n')
     return(NULL)
   }
 
-  x=as.matrix(x)
-  scores=lof(x,k=k,metric=metric, q=q)
-
-  #Implement sidedness
-  if(ncol(x)==1){
-    if(!is.null(side)) {
-      side=tolower(substr(side,1,1))
-
-      if(side %in% c('l','r','b')){
-        s=seq_along(scores)
-        temp=cbind(cbind(x,scores),s)
-        temp=temp[order(temp[,1]),]
-        goodrange=range(which(temp[,2]>=thresh))
-
-        if(side=='b'){
-          temp[(s>goodrange[1])&(s<goodrange[2]),2]=0
-        }
-        if(side=='l'){
-          temp[(s>goodrange[1]),2]=0
-        }
-        if(side=='r'){
-          temp[(s<goodrange[2]),2]=0
-        }
-
-        scores=temp[order(temp[,3]),2]
-
-      }
-    }
+  if(level<0){
+    level=0
+    cat('Negative level is reset to 0.\n')
   }
 
-  n=length(which(!is.na(scores)))
+  x=as.matrix(x)
+
 
   if(is.null(nmax)){
-    nmax=n
-  }else{
-    nmax=min(n,nmax)
+    nmax=nrow(x)
   }
-  ind=order(scores,decreasing = TRUE)[1:nmax]
-  ind=ind[scores[ind]>=thresh]
+  nmax=min(nmax,nrow(x))
 
-  flag=rep(FALSE,length(scores))
+
+
+
+  if(crit=='lof'){
+
+    thresh=(1-level)/level
+
+    scores=lof(x,k=k,metric=metric, q=q)
+
+    #Implement sidedness
+    if(ncol(x)==1){
+      if(!is.null(side)) {
+
+        if(side %in% c('l','r','b')){
+          s=seq_along(scores)
+          temp=cbind(cbind(x,scores),s)
+          temp=temp[order(temp[,1]),]
+          suppressWarnings({goodrange=range(which(temp[,2]>thresh))})
+
+          if(side=='b'){
+            temp[(s>goodrange[1])&(s<goodrange[2]),2]=0
+          }
+          if(side=='l'){
+            temp[(s>goodrange[1]),2]=0
+          }
+          if(side=='r'){
+            temp[(s<goodrange[2]),2]=0
+          }
+
+          scores=temp[order(temp[,3]),2]
+
+        }
+      }
+    }
+
+    n=length(which(!is.na(scores)))
+
+    nmax=min(n,nmax)
+
+    ind=order(scores,decreasing = TRUE)[1:nmax]
+    ind=ind[scores[ind]>thresh]
+  }#End of LOF
+
+  if(crit=='gru'){
+
+    #In this method only the outliers on the sides are possible, so null side is treated simply as the two-sided test
+    #If the data is multidimensional, one-sided tests are not applied
+    if(is.null(side)|(ncol(x)>1)) side='b'
+
+    ind=c()
+    for( i in 1:nmax){
+      y=zscore(x,side=side)
+
+      i_to_drop=which(apply(apply(y,2,grubbs1D,level=level,side=side),1,function(x){any(x,na.rm=TRUE)}))
+      if(length(i_to_drop)==0) break
+
+      #Add the found index to the list and then populate that row of x with NA, to exclude it from next iteration.
+      ind=c(ind,i_to_drop)
+      x[i_to_drop,]=NA
+    }
+
+  }#End of Grubbs
+
+
+
+
+
+
+
+
+  flag=rep(FALSE,nrow(x))
   flag[ind]=TRUE
 
 

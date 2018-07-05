@@ -4,19 +4,23 @@
 \alias{flag}
 \title{Flag outliers}
 \usage{
-flag(x, thresh = 1.5, nmax = NULL, side = NULL, crit = "lof",
+flag(x, level = 0.5, nmax = NULL, side = NULL, crit = "lof",
   asInt = TRUE, k = 5, metric = "euclidean", q = 3)
 }
 \arguments{
 \item{x}{a matrix, data frame or vector of data points (a vector will be understood as 1D data, equivalent to a 1-column matrix). Each row is a data point and each column is a dimension. NA values are allowed and will produce NAs in the output.}
 
-\item{thresh}{threshold for the outlier factor above which the data point is flagged as an outlier. The outlier factor is the LOF for the LOF method and the "1+odds of outlying" for the Chauvenet method}
+\item{level}{threshold for finding outliers. Meant to be from 0 to 1. Smaller values mean a higher bar for outliers and so typically detect fewer outliers.
+For probabilistic methods (such as based on normal distribution), it is the significance level. For LOF, we set the LOF threshold to \code{1/level -1}.
+\code{level=0} will flag no outliers. LOF method with \code{level=1} will flag all points as outliers (or as many as \code{nmax} allows).
+Note however, that Grubbs method may still leave some points unflagged even with \code{level=1}.}
 
 \item{nmax}{the maximum number of outliers to remove. If NULL, ignored.}
 
 \item{side}{if set to 'left', 'right' or 'both' (can be abreviated to one letter and case-insensitive) will flag only the outliers on the left, right or both ends of the 1D distribution. If NULL, all outliers will be flagged. If the data is not 1D, \code{side} will be ignored. Note that for the methods that only find outliers on the sides of the distribution (e.g Chauvenet) NULL and 'both' give equivalent results.}
 
-\item{crit}{criterion to use for identifying outliers. Currently, can be either 'lof' or 'chauvenet'. Can be abbreviated to 3 first letters, case-insentitive}
+\item{crit}{criterion to use for identifying outliers. Currently, can be either 'LOF' or 'Grubbs'. Can be abbreviated to 3 first letters, case-insentitive. If 'Grubbs',
+the 1D Grubbs method will be applied along each principal axis of the data and points deemed outliers along at least one axis will be flagged.}
 
 \item{asInt}{if TRUE, the flag values will be integers (1 for outlier and 0 otherwise). If FALSE, boolean}
 
