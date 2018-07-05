@@ -87,7 +87,7 @@ flag=function(x, thresh=1.5, nmax=NULL, side=NULL, crit='lof', asInt=TRUE, k=5, 
 #' @param x a matrix, data frame or vector of data points (a vector will be understood as 1D data, equivalent to a 1-column matrix). Each row is a data point and each column is a dimension. NA values are allowed and will produce NAs in the output.
 #' @param flag a boolean or integer (0-or-1) vector flagging outliers, such as produced by the function \code{flag}. If NULL, further arguments will be used to compute it here by calling \code{flag}.
 #' @param fill method for imputing (or removing) outliers. If numeric or NA, it is the value that will replace the outliers. It the data is K-dimensional, \code{fill} is expected to be a vector of length K. If longer, the first K components will be used, and if shorter, the vector will be extended by NAs.
-#' Alternatively, \code{fill} can be a character string. Values 'mean' and 'median' replace outliers with the mean or (multidimensional) median of the rest of the remaining data,
+#' Alternatively, \code{fill} can be a character string. Values 'mean' and 'median' replace outliers with the mean or (multidimensional) median of the rest of the remaining data, 'random' generates random replacement values drawn from the estimated probability distribution of the non-outlier data-points,
 #' 'remove' removes the outliers by calling the function \code{purge}. Can be abbreviated to the first 3 letters, case-insensitive.
 #' @param thresh passed to the function \code{flag} if the argument 'flag' is NULL or missing
 #' @param nmax passed to the function \code{flag} if the argument 'flag' is NULL or missing
@@ -140,17 +140,35 @@ impute=function(x, flag=NULL, fill='mean', thresh=1.5, nmax=NULL, side=NULL, cri
 
   flag=as.logical(flag)
   flag[is.na(flag)]=FALSE
+  n_to_impute=length(which(flag))
+  xvalid=x[!flag,,drop=FALSE]
 
   if(is.null(fillval)){
     fillval=switch(fill
-                 ,'mea'=apply(x[!flag,,drop=FALSE],2,function(x){mean(x,na.rm=TRUE)})
-                 ,'med'=mmedian(x[!flag,,drop=FALSE],metric=metric,q=q,...)
+                 ,'mea'={
+                   temp=matrix(apply(xvalid,2,function(x){mean(x,na.rm=TRUE)}),ncol=ncol(x))
+                   temp[rep(1,n_to_impute),]
+                 }
+                 ,'med'={
+                   temp=matrix(mmedian(xvalid,metric=metric,q=q,...),ncol=ncol(x))
+                   temp[rep(1,n_to_impute),]
+                 }
+                 ,'ran'={
+                   err=sapply(bw(xvalid),function(bw){rnorm(n_to_impute,0,bw)})
+                   if(n_to_impute==1) err=matrix(err,nrow = n_to_impute)
+                   ind=sample(which(apply(xvalid,1,function(x){all(!is.na(x))})),n_to_impute,replace=TRUE)
+                   temp=xvalid[ind,]+err
+                 }
                  )
   }else{
     fillval=fillval[1:ncol(x)]
+    fillval=matrix(fillval,ncol=ncol(x))
+    fillval=fillval[rep(1,n_to_impute),]
   }
-  fillval=matrix(fillval,ncol=length(fillval))
-  x[flag,]=fillval[rep(1,length(which(flag))),]
+
+
+
+  x[flag,]=fillval
 
 
   x=switch(orig.format
@@ -202,3 +220,24 @@ purge=function(x, flag=NULL, thresh=1.5, nmax=NULL, side=NULL, crit='lof', k=5, 
 }
 
 
+
+
+#' Density kernel bandwidth
+#'
+#' The Silverman's rule of thumb kernel bandwidth for Gaussian 2nd order density kernel, for multidimensional data.
+#'
+#' @param x data, as a matrix. Each row is a data points, each column is a dimension. NA values will be ignored.
+#'
+#' @return a vector of bandwidths, the length is the number of columns in x.
+#'
+#' @examples
+bw=function(x){
+  s=apply(x,2,sd,na.rm=TRUE)
+  mad=apply(x,2,function(x){mean(abs(x-mean(x,na.rm=TRUE)),na.rm=TRUE)})
+  iq=apply(x,2,IQR,na.rm=TRUE)
+  n=apply(x,2,function(x){length(which(!is.na(x)))})
+  bw=1.06*pmin(s,0.6745*mad,0.7413*iq,na.rm=TRUE)*(n^(-1/(4+length(n))))
+
+  return(bw)
+
+}

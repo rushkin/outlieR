@@ -17,11 +17,9 @@ abserror=function(par,points,metric='euc',q=2){
   return(a)
 }
 
-
 #' Median of multidimensional data
 #'
 #' @param x a matrix, data frame or vector of data points (a vector will be understood as 1D data, equivalent to a 1-column matrix). Rows with NA values will be dropped.
-#' @param na.rm boolean, whether or not to drop rows (or elements, if 1D vector) in \code{x} that contain NAs.
 #' @param metric a choice of 'euclidean','maximum','manhattan','canberra','minkowski', or 'binary'. Can be abbreviated to first three letters, case-insensitive.
 #' @param q the power in the minkowski metric. If \code{q=2}, equivalent to 'euclidean'.
 #' @param simple1d boolean, if TRUE, will resort to the standard \code{median} function in case the data is 1D. This means that only euclidean metric will be used. However, most metrics are identical to euclidean in 1D anyway, so it is usually no big loss.
@@ -37,7 +35,7 @@ abserror=function(par,points,metric='euc',q=2){
 #' @export
 #'
 #' @examples
-mmedian=function(x,na.rm=FALSE,metric='euclidean',q=3,simple1d=TRUE,...){
+mmedian=function(x,metric='euclidean',q=3,simple1d=TRUE,...){
 
     metric=tolower(substr(metric,1,3))
 
@@ -50,21 +48,19 @@ mmedian=function(x,na.rm=FALSE,metric='euclidean',q=3,simple1d=TRUE,...){
 
     #Special case: 1D
     if((ncol(x)==1)&simple1d){
-      return(median(x[,1],na.rm=na.rm))
+      return(median(x[,1],na.rm=TRUE))
     }
 
 
 
 
     #General case:
-    if(na.rm){
       indna=apply(x,1,function(x){any(is.na(x))})
       x1=x[!indna,]
-      if(nrow(x)==0) return(rep(NA,ncol(x)))
-    }
+      if(nrow(x1)==0) return(rep(NA,ncol(x)))
 
-    par=colSums(x)/nrow(x)
-    suppressWarnings({ae=Rcgmin::Rcgmin(par=par,fn=abserror,points=x,metric=metric,q=q)})
+    par=colSums(x1)/nrow(x1)
+    suppressWarnings({ae=Rcgmin::Rcgmin(par=par,fn=abserror,points=x1,metric=metric,q=q)})
     if(ae$convergence>0){
       warning('Method did not converge!')
     }
