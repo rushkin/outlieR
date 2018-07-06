@@ -9,7 +9,7 @@ mmedian(x, metric = "euclidean", q = 3, simple1d = TRUE, ...)
 \arguments{
 \item{x}{a matrix, data frame or vector of data points (a vector will be understood as 1D data, equivalent to a 1-column matrix). Rows with NA values will be dropped.}
 
-\item{metric}{a choice of 'euclidean','maximum','manhattan','canberra','minkowski', or 'binary'. Can be abbreviated to first three letters, case-insensitive.}
+\item{metric}{a choice of 'euclidean','maximum','manhattan','canberra','minkowski', or 'binary'. Any unambiguous substring can be given, case insensitive.}
 
 \item{q}{the power in the minkowski metric. If \code{q=2}, equivalent to 'euclidean'.}
 

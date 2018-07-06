@@ -8,7 +8,7 @@
 #' \code{level=0} will flag no outliers. LOF method with \code{level=1} will flag all points as outliers (or as many as \code{nmax} allows).
 #' Note however, that Grubbs method may still leave some points unflagged even with \code{level=1}.
 #' @param nmax the maximum number of outliers to remove. If NULL, ignored.
-#' @param side if set to 'left', 'right' or 'both' (can be abreviated to one letter and case-insensitive) will flag only the outliers on the left, right or both ends of the 1D distribution. If NULL, all outliers will be flagged. If the data is not 1D, \code{side} will be ignored. Note that for the methods that only find outliers on the sides of the distribution (e.g Chauvenet) NULL and 'both' give equivalent results.
+#' @param side if set to 'left', 'right' or 'both' (can be abbreviated to one letter and case-insensitive) will flag only the outliers on the left, right or both ends of the 1D distribution. If NULL, all outliers will be flagged. If the data is not 1D, \code{side} will be ignored. Note that for the methods that only find outliers on the sides of the distribution (e.g Chauvenet) NULL and 'both' give equivalent results.
 #' @param crit criterion to use for identifying outliers. Currently, can be either 'LOF' or 'Grubbs'. Any unambiguous substring can be given, case insensitive. If 'Grubbs',
 #' the 1D Grubbs method will be applied along each principal axis of the data and points deemed outliers along at least one axis will be flagged.
 #' @param asInt if TRUE, the flag values will be integers (1 for outlier and 0 otherwise). If FALSE, boolean
@@ -240,7 +240,7 @@ impute=function(x, flag=NULL, fill='mean', level=0.1, nmax=NULL, side=NULL, crit
 #' @param x a matrix, data frame or vector of data points (a vector will be understood as 1D data, equivalent to a 1-column matrix). Each row is a data point and each column is a dimension. NA values are allowed and will produce NAs in the output.
 #' @param flag a boolean or integer (0-or-1) vector flagging outliers, such as produced by the function \code{flag}. If NULL, further arguments will be used to compute it here by calling \code{flag}.
 #' @param fill method for imputing (or removing) outliers:'mean' and 'median' replace outliers with the mean or (multidimensional) median of the rest of the remaining data,
-#' 'remove' removes the outliers. Can be abbreviated to the first 3 letters, case-insensitive.
+#' 'remove' removes the outliers. Any unambiguous substring can be given, case insensitive.
 #' @param level passed to the function \code{flag} if the argument 'flag' is NULL or missing
 #' @param nmax passed to the function \code{flag} if the argument 'flag' is NULL or missing
 #' @param side passed to the function \code{flag} if the argument 'flag' is NULL or missing

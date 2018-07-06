@@ -27,7 +27,7 @@ purge(x, flag = NULL, level = 0.1, nmax = NULL, side = NULL,
 \item{q}{power in Minkowski metric, used if \code{fill='median'} and \code{metric='minkowski'}}
 
 \item{fill}{method for imputing (or removing) outliers:'mean' and 'median' replace outliers with the mean or (multidimensional) median of the rest of the remaining data,
-'remove' removes the outliers. Can be abbreviated to the first 3 letters, case-insensitive.}
+'remove' removes the outliers. Any unambiguous substring can be given, case insensitive.}
 }
 \value{
 object like \code{x} but with outliers removed.

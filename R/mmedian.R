@@ -25,7 +25,7 @@ abserror=function(par,points,metric='euclidean',q=2){
 #' Median of multidimensional data
 #'
 #' @param x a matrix, data frame or vector of data points (a vector will be understood as 1D data, equivalent to a 1-column matrix). Rows with NA values will be dropped.
-#' @param metric a choice of 'euclidean','maximum','manhattan','canberra','minkowski', or 'binary'. Can be abbreviated to first three letters, case-insensitive.
+#' @param metric a choice of 'euclidean','maximum','manhattan','canberra','minkowski', or 'binary'. Any unambiguous substring can be given, case insensitive.
 #' @param q the power in the minkowski metric. If \code{q=2}, equivalent to 'euclidean'.
 #' @param simple1d boolean, if TRUE, will resort to the standard \code{median} function in case the data is 1D. This means that only euclidean metric will be used. However, most metrics are identical to euclidean in 1D anyway, so it is usually no big loss.
 #' @param ... other arguments passed to \code{Rcgmin::Rcgmin}.
@@ -41,8 +41,6 @@ abserror=function(par,points,metric='euclidean',q=2){
 #'
 #' @examples
 mmedian=function(x,metric='euclidean',q=3,simple1d=TRUE,...){
-
-    metric=tolower(substr(metric,1,3))
 
     if(is.null(dim(x))){
       x=data.frame(x=x)

@@ -17,7 +17,7 @@ Note however, that Grubbs method may still leave some points unflagged even with
 
 \item{nmax}{the maximum number of outliers to remove. If NULL, ignored.}
 
-\item{side}{if set to 'left', 'right' or 'both' (can be abreviated to one letter and case-insensitive) will flag only the outliers on the left, right or both ends of the 1D distribution. If NULL, all outliers will be flagged. If the data is not 1D, \code{side} will be ignored. Note that for the methods that only find outliers on the sides of the distribution (e.g Chauvenet) NULL and 'both' give equivalent results.}
+\item{side}{if set to 'left', 'right' or 'both' (can be abbreviated to one letter and case-insensitive) will flag only the outliers on the left, right or both ends of the 1D distribution. If NULL, all outliers will be flagged. If the data is not 1D, \code{side} will be ignored. Note that for the methods that only find outliers on the sides of the distribution (e.g Chauvenet) NULL and 'both' give equivalent results.}
 
 \item{crit}{criterion to use for identifying outliers. Currently, can be either 'LOF' or 'Grubbs'. Any unambiguous substring can be given, case insensitive. If 'Grubbs',
 the 1D Grubbs method will be applied along each principal axis of the data and points deemed outliers along at least one axis will be flagged.}
