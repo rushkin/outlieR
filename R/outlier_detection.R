@@ -9,33 +9,27 @@
 #' Note however, that Grubbs method may still leave some points unflagged even with \code{level=1}.
 #' @param nmax the maximum number of outliers to remove. If NULL, ignored.
 #' @param side if set to 'left', 'right' or 'both' (can be abreviated to one letter and case-insensitive) will flag only the outliers on the left, right or both ends of the 1D distribution. If NULL, all outliers will be flagged. If the data is not 1D, \code{side} will be ignored. Note that for the methods that only find outliers on the sides of the distribution (e.g Chauvenet) NULL and 'both' give equivalent results.
-#' @param crit criterion to use for identifying outliers. Currently, can be either 'LOF' or 'Grubbs'. Can be abbreviated to 3 first letters, case-insentitive. If 'Grubbs',
+#' @param crit criterion to use for identifying outliers. Currently, can be either 'LOF' or 'Grubbs'. Any unambiguous substring can be given, case insensitive. If 'Grubbs',
 #' the 1D Grubbs method will be applied along each principal axis of the data and points deemed outliers along at least one axis will be flagged.
 #' @param asInt if TRUE, the flag values will be integers (1 for outlier and 0 otherwise). If FALSE, boolean
 #' @param k number of nearest neighbors for the LOF calculation
-#' @param metric distance metric to use. This must be one of "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski". Any unambiguous substring can be given.
+#' @param metric distance metric to use. This must be one of "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski". Any unambiguous substring can be given, case insensitive.
 #' @param q the power of the Minkowski distance.
 #'
 #' @return a boolean or integer (depending on \code{asInt}) vector of the same length as the number of points in the data, containing 1 (TRUE) if a data point is an outlier, 0 (FALSE) if it is not and NA if a point in the data contained NA value(s), the
 #' @export
 
-flag=function(x, level=0.5, nmax=NULL, side=NULL, crit='lof', asInt=TRUE, k=5, metric='euclidean', q=3){
-  critallowed=c('LOF','Grubbs')
-  crit=tolower(substr(crit,1,3))
+flag=function(x, level=0.1, nmax=NULL, side=NULL, crit='lof', asInt=TRUE, k=5, metric='euclidean', q=3){
+  criteria=c('lof','grubbs')
+  crit=pmatch(tolower(crit),criteria)
+  if(is.na(crit)) stop('invalid outlier criterion name')
+  if(crit==-1) stop('ambiguous outlier criterion name')
+
+  if(level<0) stop('negative level is invalid')
 
   if(!is.null(side)){
     side=tolower(substr(side,1,1))
     if(!(side %in% c('l','r'))) side='b'
-  }
-
-  if(!(crit %in% tolower(substr(critallowed,1,3)))){
-    cat('Outlier criterion (argument "crit") not recognized.\nAllowed criteria:',paste(critallowed,collapse=', '),'\n')
-    return(NULL)
-  }
-
-  if(level<0){
-    level=0
-    cat('Negative level is reset to 0.\n')
   }
 
   x=as.matrix(x)
@@ -49,7 +43,7 @@ flag=function(x, level=0.5, nmax=NULL, side=NULL, crit='lof', asInt=TRUE, k=5, m
 
 
 
-  if(crit=='lof'){
+  if(crit==1){
 
     thresh=(1-level)/level
 
@@ -89,7 +83,7 @@ flag=function(x, level=0.5, nmax=NULL, side=NULL, crit='lof', asInt=TRUE, k=5, m
     ind=ind[scores[ind]>thresh]
   }#End of LOF
 
-  if(crit=='gru'){
+  if(crit==2){
 
     #In this method only the outliers on the sides are possible, so null side is treated simply as the two-sided test
     #If the data is multidimensional, one-sided tests are not applied
@@ -140,13 +134,13 @@ flag=function(x, level=0.5, nmax=NULL, side=NULL, crit='lof', asInt=TRUE, k=5, m
 #' @param flag a boolean or integer (0-or-1) vector flagging outliers, such as produced by the function \code{flag}. If NULL, further arguments will be used to compute it here by calling \code{flag}.
 #' @param fill method for imputing (or removing) outliers. If numeric or NA, it is the value that will replace the outliers. It the data is K-dimensional, \code{fill} is expected to be a vector of length K. If longer, the first K components will be used, and if shorter, the vector will be extended by NAs.
 #' Alternatively, \code{fill} can be a character string. Values 'mean' and 'median' replace outliers with the mean or (multidimensional) median of the rest of the remaining data, 'random' generates random replacement values drawn from the estimated probability distribution of the non-outlier data-points,
-#' 'remove' removes the outliers by calling the function \code{purge}. Can be abbreviated to the first 3 letters, case-insensitive.
-#' @param thresh passed to the function \code{flag} if the argument 'flag' is NULL or missing
+#' 'remove' removes the outliers by calling the function \code{purge}. Any unambiguous substring can be given, case insensitive.
+#' @param level passed to the function \code{flag} if the argument 'flag' is NULL or missing
 #' @param nmax passed to the function \code{flag} if the argument 'flag' is NULL or missing
 #' @param side passed to the function \code{flag} if the argument 'flag' is NULL or missing
 #' @param crit passed to the function \code{flag} if the argument 'flag' is NULL or missing
 #' @param k passed to the function \code{flag} if the argument 'flag' is NULL or missing
-#' @param metric distance metric to be used in LOF (if \code{flag} is not provided) as well as for multidimensional median if \code{fill} is 'median'. A choice of 'euclidean','maximum','manhattan','canberra','minkowski', or 'binary'. Can be abbreviated to first three letters, case-insensitive.
+#' @param metric distance metric to be used in LOF (if \code{flag} is not provided) as well as for multidimensional median if \code{fill} is 'median'. A choice of 'euclidean','maximum','manhattan','canberra','minkowski', or 'binary'. Any unambiguous substring can be given, case insensitive.
 #' @param q power in Minkowski metric, used if \code{fill='median'} and \code{metric='minkowski'}
 #' @param ... passed to \code{Rcgmin} if the argument \code{fill} is 'median' and data is multidimensional
 #'
@@ -155,15 +149,22 @@ flag=function(x, level=0.5, nmax=NULL, side=NULL, crit='lof', asInt=TRUE, k=5, m
 #' @export
 #'
 #' @examples
-impute=function(x, flag=NULL, fill='mean', thresh=1.5, nmax=NULL, side=NULL, crit='lof', k=5, metric='euclidean', q=3, ...){
+impute=function(x, flag=NULL, fill='mean', level=0.1, nmax=NULL, side=NULL, crit='lof', k=5, metric='euclidean', q=3, ...){
+
+  fills=c('mean','median','random','remove')
 
   if(!is.character(fill)){
     fillval=fill
   }else{
     fillval=NULL
-    fill=tolower(substr(fill,1,3))
-    if(fill=='rem'){
-      return(purge(x=x,flag=flag,thresh=thresh,nmax=nmax,side=side,crit=crit,k=k,metric=metric,q=q))
+
+    fill=pmatch(tolower(fill),fills)
+    if(is.na(fill)) stop('invalid fill option')
+    if(fill==-1) stop('ambiguous fill option')
+    fill=fills[fill]
+
+    if(fill=='remove'){
+      return(purge(x=x,flag=flag,level=level,nmax=nmax,side=side,crit=crit,k=k,metric=metric,q=q))
     }
   }
 
@@ -187,7 +188,7 @@ impute=function(x, flag=NULL, fill='mean', thresh=1.5, nmax=NULL, side=NULL, cri
 
 
   if(is.null(flag)){
-    flag=flag(x=x,thresh=thresh, nmax=nmax, side=side,crit=crit,k=k, metric=metric, q=q, asInt=FALSE)
+    flag=flag(x=x,level=level, nmax=nmax, side=side,crit=crit,k=k, metric=metric, q=q, asInt=FALSE)
   }
 
   flag=as.logical(flag)
@@ -197,15 +198,15 @@ impute=function(x, flag=NULL, fill='mean', thresh=1.5, nmax=NULL, side=NULL, cri
 
   if(is.null(fillval)){
     fillval=switch(fill
-                 ,'mea'={
+                 ,'mean'={
                    temp=matrix(apply(xvalid,2,function(x){mean(x,na.rm=TRUE)}),ncol=ncol(x))
                    temp[rep(1,n_to_impute),]
                  }
-                 ,'med'={
+                 ,'median'={
                    temp=matrix(mmedian(xvalid,metric=metric,q=q,...),ncol=ncol(x))
                    temp[rep(1,n_to_impute),]
                  }
-                 ,'ran'={
+                 ,'random'={
                    err=sapply(bw(xvalid),function(bw){rnorm(n_to_impute,0,bw)})
                    if(n_to_impute==1) err=matrix(err,nrow = n_to_impute)
                    ind=sample(which(apply(xvalid,1,function(x){all(!is.na(x))})),n_to_impute,replace=TRUE)
@@ -240,12 +241,12 @@ impute=function(x, flag=NULL, fill='mean', thresh=1.5, nmax=NULL, side=NULL, cri
 #' @param flag a boolean or integer (0-or-1) vector flagging outliers, such as produced by the function \code{flag}. If NULL, further arguments will be used to compute it here by calling \code{flag}.
 #' @param fill method for imputing (or removing) outliers:'mean' and 'median' replace outliers with the mean or (multidimensional) median of the rest of the remaining data,
 #' 'remove' removes the outliers. Can be abbreviated to the first 3 letters, case-insensitive.
-#' @param thresh passed to the function \code{flag} if the argument 'flag' is NULL or missing
+#' @param level passed to the function \code{flag} if the argument 'flag' is NULL or missing
 #' @param nmax passed to the function \code{flag} if the argument 'flag' is NULL or missing
 #' @param side passed to the function \code{flag} if the argument 'flag' is NULL or missing
 #' @param crit passed to the function \code{flag} if the argument 'flag' is NULL or missing
 #' @param k passed to the function \code{flag} if the argument 'flag' is NULL or missing
-#' @param metric distance metric to be used in LOF (if \code{flag} is not provided). A choice of 'euclidean','maximum','manhattan','canberra','minkowski', or 'binary'. Can be abbreviated to first three letters, case-insensitive.
+#' @param metric distance metric to be used in LOF (if \code{flag} is not provided). A choice of 'euclidean','maximum','manhattan','canberra','minkowski', or 'binary'. Any unambiguous substring can be given, case insensitive.
 #' @param q power in Minkowski metric, used if \code{fill='median'} and \code{metric='minkowski'}
 #'
 #' @return object like \code{x} but with outliers removed.
@@ -253,10 +254,10 @@ impute=function(x, flag=NULL, fill='mean', thresh=1.5, nmax=NULL, side=NULL, cri
 #' @export
 #'
 #' @examples
-purge=function(x, flag=NULL, thresh=1.5, nmax=NULL, side=NULL, crit='lof', k=5, metric='euclidean', q=3){
+purge=function(x, flag=NULL, level=0.1, nmax=NULL, side=NULL, crit='lof', k=5, metric='euclidean', q=3){
 
   if(is.null(flag)){
-    flag=flag(x=x,thresh=thresh, nmax=nmax, side=side,crit=crit,k=k, metric=metric, q=q, asInt=FALSE)
+    flag=flag(x=x,level=level, nmax=nmax, side=side,crit=crit,k=k, metric=metric, q=q, asInt=FALSE)
   }
 
   flag=as.logical(flag)

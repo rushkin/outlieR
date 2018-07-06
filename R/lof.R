@@ -4,13 +4,19 @@
 #'
 #' @param x a matrix or data frame of data points. Each row is a data point, each column is a dimension.
 #' @param k number of nearest neighbors in the LOF calculation (default 5).
-#' @param metric distance metric to use. This must be one of "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski". Any unambiguous substring can be given.
+#' @param metric distance metric to use. This must be one of "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski". Any unambiguous substring can be given, case-insensitive
 #' @param q the power of the Minkowski distance.
 #' @return a vector of LOF values, in the same order as the data points in \code{x}. NA values will be returned for those data points which contained at least one NA coordinate.
 #' @export
 #'
 #' @examples
 lof=function(x, k=5, metric='euclidean', q=3){
+
+  metrics=c('euclidean','maximum','manhattan','canberra','binary','minkowski')
+  metric=pmatch(tolower(metric),metrics)
+  if(is.na(metric)) stop('invalid distance metric name')
+  if(metric==-1) stop('ambiguous distance metric name')
+  metric=metrics[metric]
 
   x=as.matrix(x)
 

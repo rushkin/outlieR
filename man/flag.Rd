@@ -4,7 +4,7 @@
 \alias{flag}
 \title{Flag outliers}
 \usage{
-flag(x, level = 0.5, nmax = NULL, side = NULL, crit = "lof",
+flag(x, level = 0.1, nmax = NULL, side = NULL, crit = "lof",
   asInt = TRUE, k = 5, metric = "euclidean", q = 3)
 }
 \arguments{
@@ -19,14 +19,14 @@ Note however, that Grubbs method may still leave some points unflagged even with
 
 \item{side}{if set to 'left', 'right' or 'both' (can be abreviated to one letter and case-insensitive) will flag only the outliers on the left, right or both ends of the 1D distribution. If NULL, all outliers will be flagged. If the data is not 1D, \code{side} will be ignored. Note that for the methods that only find outliers on the sides of the distribution (e.g Chauvenet) NULL and 'both' give equivalent results.}
 
-\item{crit}{criterion to use for identifying outliers. Currently, can be either 'LOF' or 'Grubbs'. Can be abbreviated to 3 first letters, case-insentitive. If 'Grubbs',
+\item{crit}{criterion to use for identifying outliers. Currently, can be either 'LOF' or 'Grubbs'. Any unambiguous substring can be given, case insensitive. If 'Grubbs',
 the 1D Grubbs method will be applied along each principal axis of the data and points deemed outliers along at least one axis will be flagged.}
 
 \item{asInt}{if TRUE, the flag values will be integers (1 for outlier and 0 otherwise). If FALSE, boolean}
 
 \item{k}{number of nearest neighbors for the LOF calculation}
 
-\item{metric}{distance metric to use. This must be one of "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski". Any unambiguous substring can be given.}
+\item{metric}{distance metric to use. This must be one of "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski". Any unambiguous substring can be given, case insensitive.}
 
 \item{q}{the power of the Minkowski distance.}
 }

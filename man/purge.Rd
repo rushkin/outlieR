@@ -4,7 +4,7 @@
 \alias{purge}
 \title{Remove outliers}
 \usage{
-purge(x, flag = NULL, thresh = 1.5, nmax = NULL, side = NULL,
+purge(x, flag = NULL, level = 0.1, nmax = NULL, side = NULL,
   crit = "lof", k = 5, metric = "euclidean", q = 3)
 }
 \arguments{
@@ -12,7 +12,7 @@ purge(x, flag = NULL, thresh = 1.5, nmax = NULL, side = NULL,
 
 \item{flag}{a boolean or integer (0-or-1) vector flagging outliers, such as produced by the function \code{flag}. If NULL, further arguments will be used to compute it here by calling \code{flag}.}
 
-\item{thresh}{passed to the function \code{flag} if the argument 'flag' is NULL or missing}
+\item{level}{passed to the function \code{flag} if the argument 'flag' is NULL or missing}
 
 \item{nmax}{passed to the function \code{flag} if the argument 'flag' is NULL or missing}
 
@@ -22,7 +22,7 @@ purge(x, flag = NULL, thresh = 1.5, nmax = NULL, side = NULL,
 
 \item{k}{passed to the function \code{flag} if the argument 'flag' is NULL or missing}
 
-\item{metric}{distance metric to be used in LOF (if \code{flag} is not provided). A choice of 'euclidean','maximum','manhattan','canberra','minkowski', or 'binary'. Can be abbreviated to first three letters, case-insensitive.}
+\item{metric}{distance metric to be used in LOF (if \code{flag} is not provided). A choice of 'euclidean','maximum','manhattan','canberra','minkowski', or 'binary'. Any unambiguous substring can be given, case insensitive.}
 
 \item{q}{power in Minkowski metric, used if \code{fill='median'} and \code{metric='minkowski'}}
 

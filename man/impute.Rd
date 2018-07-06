@@ -4,7 +4,7 @@
 \alias{impute}
 \title{Impute outliers}
 \usage{
-impute(x, flag = NULL, fill = "mean", thresh = 1.5, nmax = NULL,
+impute(x, flag = NULL, fill = "mean", level = 0.1, nmax = NULL,
   side = NULL, crit = "lof", k = 5, metric = "euclidean", q = 3, ...)
 }
 \arguments{
@@ -14,9 +14,9 @@ impute(x, flag = NULL, fill = "mean", thresh = 1.5, nmax = NULL,
 
 \item{fill}{method for imputing (or removing) outliers. If numeric or NA, it is the value that will replace the outliers. It the data is K-dimensional, \code{fill} is expected to be a vector of length K. If longer, the first K components will be used, and if shorter, the vector will be extended by NAs.
 Alternatively, \code{fill} can be a character string. Values 'mean' and 'median' replace outliers with the mean or (multidimensional) median of the rest of the remaining data, 'random' generates random replacement values drawn from the estimated probability distribution of the non-outlier data-points,
-'remove' removes the outliers by calling the function \code{purge}. Can be abbreviated to the first 3 letters, case-insensitive.}
+'remove' removes the outliers by calling the function \code{purge}. Any unambiguous substring can be given, case insensitive.}
 
-\item{thresh}{passed to the function \code{flag} if the argument 'flag' is NULL or missing}
+\item{level}{passed to the function \code{flag} if the argument 'flag' is NULL or missing}
 
 \item{nmax}{passed to the function \code{flag} if the argument 'flag' is NULL or missing}
 
@@ -26,7 +26,7 @@ Alternatively, \code{fill} can be a character string. Values 'mean' and 'median'
 
 \item{k}{passed to the function \code{flag} if the argument 'flag' is NULL or missing}
 
-\item{metric}{distance metric to be used in LOF (if \code{flag} is not provided) as well as for multidimensional median if \code{fill} is 'median'. A choice of 'euclidean','maximum','manhattan','canberra','minkowski', or 'binary'. Can be abbreviated to first three letters, case-insensitive.}
+\item{metric}{distance metric to be used in LOF (if \code{flag} is not provided) as well as for multidimensional median if \code{fill} is 'median'. A choice of 'euclidean','maximum','manhattan','canberra','minkowski', or 'binary'. Any unambiguous substring can be given, case insensitive.}
 
 \item{q}{power in Minkowski metric, used if \code{fill='median'} and \code{metric='minkowski'}}
 

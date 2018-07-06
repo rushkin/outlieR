@@ -18,7 +18,7 @@ return(scores)
 
 }
 
-grubbs1D=function(y,level=0.5,side='b'){
+grubbs1D=function(y,level=0.1,side='b'){
   N=length(which(!is.na(y)))
   res=rep(FALSE,length(y))
   if(N<3) return(res)

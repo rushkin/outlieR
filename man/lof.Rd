@@ -11,7 +11,7 @@ lof(x, k = 5, metric = "euclidean", q = 3)
 
 \item{k}{number of nearest neighbors in the LOF calculation (default 5).}
 
-\item{metric}{distance metric to use. This must be one of "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski". Any unambiguous substring can be given.}
+\item{metric}{distance metric to use. This must be one of "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski". Any unambiguous substring can be given, case-insensitive}
 
 \item{q}{the power of the Minkowski distance.}
 }

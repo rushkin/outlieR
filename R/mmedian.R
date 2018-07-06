@@ -1,13 +1,18 @@
-abserror=function(par,points,metric='euc',q=2){
+abserror=function(par,points,metric='euclidean',q=2){
+  metrics=c('euclidean','maximum','manhattan','canberra','binary','minkowski')
+  metric=pmatch(tolower(metric),metrics)
+  if(is.na(metric)) stop('invalid distance metric name')
+  if(metric==-1) stop('ambiguous distance metric name')
+  metric=metrics[metric]
 
   a=switch(
     metric
-    ,'euc'=sum(sqrt(apply(points,1,function(y){sum((y-par)^2)})))
-    ,'max'=sum(apply(points,1,function(y){max(abs(y-par))}))
-    ,'man'=sum(apply(points,1,function(y){sum(abs(y-par))}))
-    ,'can'=sum(apply(points,1,function(y){sum(abs(y-par)/(abs(y)+abs(par)))}))
-    ,'min'=sum((apply(points,1,function(y){sum(abs(y-par)^q)}))^(1/q))
-    ,'bin'=sum(apply(points,1,function(y){
+    ,'euclidean'=sum(sqrt(apply(points,1,function(y){sum((y-par)^2)})))
+    ,'maximum'=sum(apply(points,1,function(y){max(abs(y-par))}))
+    ,'manhattan'=sum(apply(points,1,function(y){sum(abs(y-par))}))
+    ,'canberra'=sum(apply(points,1,function(y){sum(abs(y-par)/(abs(y)+abs(par)))}))
+    ,'minkowski'=sum((apply(points,1,function(y){sum(abs(y-par)^q)}))^(1/q))
+    ,'binary'=sum(apply(points,1,function(y){
       yy=(y!=0)
       pp=(par!=0)
       return(length(which(xor(yy,pp)))/length(which(yy|pp)))
