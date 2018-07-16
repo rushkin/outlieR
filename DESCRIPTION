@@ -3,9 +3,8 @@ Type: Package
 Title: Outlier detection in multidimensional data
 Version: 0.1.0
 Author: Ilia Rushkin
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Maintainer: Ilia Rushkin <iliarushkin@gmail.com>
+Description: Detecting, removing or replacing outliers in multidimensional data.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
