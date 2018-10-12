@@ -16,7 +16,7 @@
 #' @param metric distance metric to use. This must be one of "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski". Any unambiguous substring can be given, case insensitive.
 #' @param q the power of the Minkowski distance.
 #' @param na.propagate boolean to determine what the flag should be for NA values of \code{x}. If TRUE, the flag will be NA, otherwise it is flagged as a non-outlier.
-#'
+#' @export
 #' @return a boolean or integer (depending on \code{asInt}) vector of the same length as the number of points in the data, containing 1 (TRUE) if a data point is an outlier, 0 (FALSE) if it is not. Depending on \code{na.propagate} NA data points get flag value NA or 0 (FALSE).
 
 flag=function(x, level=0.1, nmax=NULL, side=NULL, crit='lof', asInt=TRUE, k=5, metric='euclidean', q=3, na.propagate=FALSE){
@@ -150,7 +150,7 @@ flag=function(x, level=0.1, nmax=NULL, side=NULL, crit='lof', asInt=TRUE, k=5, m
 #'
 #' @return object like \code{x} but with outliers imputed.
 #' @details The output object will be a vector, a matrix or a data-frame, depending on what \code{x} was. Row names, column names or (if \code{x} was a named vector) names will be kept.
-#'
+#' @export
 impute=function(x, flag=NULL, fill='mean', level=0.1, nmax=NULL, side=NULL, crit='lof', k=5, metric='euclidean', q=3, ...){
 
   fills=c('mean','median','random','remove')

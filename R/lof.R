@@ -7,7 +7,7 @@
 #' @param metric distance metric to use. This must be one of "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski". Any unambiguous substring can be given, case-insensitive
 #' @param q the power of the Minkowski distance.
 #' @return a vector of LOF values, in the same order as the data points in \code{x}. NA values will be returned for those data points which contained at least one NA coordinate.
-#'
+#' @export
 lof=function(x, k=5, metric='euclidean', q=3){
 
   metrics=c('euclidean','maximum','manhattan','canberra','binary','minkowski')
