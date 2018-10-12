@@ -37,9 +37,7 @@ abserror=function(par,points,metric='euclidean',q=2){
 #'
 #'
 #' @return a vector of median components.
-#' @export
 #'
-#' @examples
 mmedian=function(x,metric='euclidean',q=3,simple1d=TRUE,...){
 
     if(is.null(dim(x))){

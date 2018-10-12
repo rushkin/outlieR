@@ -18,7 +18,6 @@
 #' @param na.propagate boolean to determine what the flag should be for NA values of \code{x}. If TRUE, the flag will be NA, otherwise it is flagged as a non-outlier.
 #'
 #' @return a boolean or integer (depending on \code{asInt}) vector of the same length as the number of points in the data, containing 1 (TRUE) if a data point is an outlier, 0 (FALSE) if it is not. Depending on \code{na.propagate} NA data points get flag value NA or 0 (FALSE).
-#' @export
 
 flag=function(x, level=0.1, nmax=NULL, side=NULL, crit='lof', asInt=TRUE, k=5, metric='euclidean', q=3, na.propagate=FALSE){
   criteria=c('lof','grubbs')
@@ -151,9 +150,7 @@ flag=function(x, level=0.1, nmax=NULL, side=NULL, crit='lof', asInt=TRUE, k=5, m
 #'
 #' @return object like \code{x} but with outliers imputed.
 #' @details The output object will be a vector, a matrix or a data-frame, depending on what \code{x} was. Row names, column names or (if \code{x} was a named vector) names will be kept.
-#' @export
 #'
-#' @examples
 impute=function(x, flag=NULL, fill='mean', level=0.1, nmax=NULL, side=NULL, crit='lof', k=5, metric='euclidean', q=3, ...){
 
   fills=c('mean','median','random','remove')
@@ -254,9 +251,7 @@ impute=function(x, flag=NULL, fill='mean', level=0.1, nmax=NULL, side=NULL, crit
 #'
 #' @return object like \code{x} but with outliers removed.
 #' @details The output object will be a vector, a matrix or a data-frame, depending on what \code{x} was. Row names, column names or (if \code{x} was a named vector) names will be kept.
-#' @export
 #'
-#' @examples
 purge=function(x, flag=NULL, level=0.1, nmax=NULL, side=NULL, crit='lof', k=5, metric='euclidean', q=3){
 
   if(is.null(flag)){
@@ -286,7 +281,6 @@ purge=function(x, flag=NULL, level=0.1, nmax=NULL, side=NULL, crit='lof', k=5, m
 #'
 #' @return a vector of bandwidths, the length is the number of columns in x.
 #'
-#' @examples
 bw=function(x){
   s=apply(x,2,sd,na.rm=TRUE)
   mad=apply(x,2,function(x){mean(abs(x-mean(x,na.rm=TRUE)),na.rm=TRUE)})
