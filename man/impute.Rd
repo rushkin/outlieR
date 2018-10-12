@@ -5,7 +5,8 @@
 \title{Impute outliers}
 \usage{
 impute(x, flag = NULL, fill = "mean", level = 0.1, nmax = NULL,
-  side = NULL, crit = "lof", k = 5, metric = "euclidean", q = 3, ...)
+  side = NULL, crit = "lof", k = 5, metric = "euclidean", q = 3,
+  ...)
 }
 \arguments{
 \item{x}{a matrix, data frame or vector of data points (a vector will be understood as 1D data, equivalent to a 1-column matrix). Each row is a data point and each column is a dimension. NA values are allowed and will produce NAs in the output.}

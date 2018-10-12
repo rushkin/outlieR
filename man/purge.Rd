@@ -25,9 +25,6 @@ purge(x, flag = NULL, level = 0.1, nmax = NULL, side = NULL,
 \item{metric}{distance metric to be used in LOF (if \code{flag} is not provided). A choice of 'euclidean','maximum','manhattan','canberra','minkowski', or 'binary'. Any unambiguous substring can be given, case insensitive.}
 
 \item{q}{power in Minkowski metric, used if \code{fill='median'} and \code{metric='minkowski'}}
-
-\item{fill}{method for imputing (or removing) outliers:'mean' and 'median' replace outliers with the mean or (multidimensional) median of the rest of the remaining data,
-'remove' removes the outliers. Any unambiguous substring can be given, case insensitive.}
 }
 \value{
 object like \code{x} but with outliers removed.

@@ -239,8 +239,6 @@ impute=function(x, flag=NULL, fill='mean', level=0.1, nmax=NULL, side=NULL, crit
 #'
 #' @param x a matrix, data frame or vector of data points (a vector will be understood as 1D data, equivalent to a 1-column matrix). Each row is a data point and each column is a dimension. NA values are allowed and will produce NAs in the output.
 #' @param flag a boolean or integer (0-or-1) vector flagging outliers, such as produced by the function \code{flag}. If NULL, further arguments will be used to compute it here by calling \code{flag}.
-#' @param fill method for imputing (or removing) outliers:'mean' and 'median' replace outliers with the mean or (multidimensional) median of the rest of the remaining data,
-#' 'remove' removes the outliers. Any unambiguous substring can be given, case insensitive.
 #' @param level passed to the function \code{flag} if the argument 'flag' is NULL or missing
 #' @param nmax passed to the function \code{flag} if the argument 'flag' is NULL or missing
 #' @param side passed to the function \code{flag} if the argument 'flag' is NULL or missing
