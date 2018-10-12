@@ -5,7 +5,8 @@
 \title{Flag outliers}
 \usage{
 flag(x, level = 0.1, nmax = NULL, side = NULL, crit = "lof",
-  asInt = TRUE, k = 5, metric = "euclidean", q = 3)
+  asInt = TRUE, k = 5, metric = "euclidean", q = 3,
+  na.propagate = FALSE)
 }
 \arguments{
 \item{x}{a matrix, data frame or vector of data points (a vector will be understood as 1D data, equivalent to a 1-column matrix). Each row is a data point and each column is a dimension. NA values are allowed and will produce NAs in the output.}
@@ -29,9 +30,11 @@ the 1D Grubbs method will be applied along each principal axis of the data and p
 \item{metric}{distance metric to use. This must be one of "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski". Any unambiguous substring can be given, case insensitive.}
 
 \item{q}{the power of the Minkowski distance.}
+
+\item{na.propagate}{boolean to determine what the flag should be for NA values of \code{x}. If TRUE, the flag will be NA, otherwise it is flagged as a non-outlier.}
 }
 \value{
-a boolean or integer (depending on \code{asInt}) vector of the same length as the number of points in the data, containing 1 (TRUE) if a data point is an outlier, 0 (FALSE) if it is not and NA if a point in the data contained NA value(s), the
+a boolean or integer (depending on \code{asInt}) vector of the same length as the number of points in the data, containing 1 (TRUE) if a data point is an outlier, 0 (FALSE) if it is not. Depending on \code{na.propagate} NA data points get flag value NA or 0 (FALSE).
 }
 \description{
 Flag outliers in a multidimensional data set

@@ -15,11 +15,12 @@
 #' @param k number of nearest neighbors for the LOF calculation
 #' @param metric distance metric to use. This must be one of "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski". Any unambiguous substring can be given, case insensitive.
 #' @param q the power of the Minkowski distance.
+#' @param na.propagate boolean to determine what the flag should be for NA values of \code{x}. If TRUE, the flag will be NA, otherwise it is flagged as a non-outlier.
 #'
-#' @return a boolean or integer (depending on \code{asInt}) vector of the same length as the number of points in the data, containing 1 (TRUE) if a data point is an outlier, 0 (FALSE) if it is not and NA if a point in the data contained NA value(s), the
+#' @return a boolean or integer (depending on \code{asInt}) vector of the same length as the number of points in the data, containing 1 (TRUE) if a data point is an outlier, 0 (FALSE) if it is not. Depending on \code{na.propagate} NA data points get flag value NA or 0 (FALSE).
 #' @export
 
-flag=function(x, level=0.1, nmax=NULL, side=NULL, crit='lof', asInt=TRUE, k=5, metric='euclidean', q=3){
+flag=function(x, level=0.1, nmax=NULL, side=NULL, crit='lof', asInt=TRUE, k=5, metric='euclidean', q=3, na.propagate=FALSE){
   criteria=c('lof','grubbs')
   crit=pmatch(tolower(crit),criteria)
   if(is.na(crit)) stop('invalid outlier criterion name')
@@ -112,6 +113,10 @@ flag=function(x, level=0.1, nmax=NULL, side=NULL, crit='lof', asInt=TRUE, k=5, m
 
   flag=rep(FALSE,nrow(x))
   flag[ind]=TRUE
+
+  if(na.propagate){
+    flag[is.na(x)]=NA
+  }
 
 
   if(asInt){
