@@ -34,76 +34,79 @@ flag=function(x, level=0.1, nmax=NULL, side=NULL, crit='lof', asInt=TRUE, k=5, m
 
   x=as.matrix(x)
 
+  if(nrow(x)>1){
 
-  if(is.null(nmax)){
-    nmax=nrow(x)
-  }
-  nmax=min(nmax,nrow(x))
+    if(is.null(nmax)){
+      nmax=nrow(x)
+    }
+    nmax=min(nmax,nrow(x))
 
 
 
 
-  if(crit==1){
+    if(crit==1){
 
-    thresh=(1-level)/level
+      thresh=(1-level)/level
 
-    scores=lof(x,k=k,metric=metric, q=q)
+      scores=lof(x,k=k,metric=metric, q=q)
 
-    #Implement sidedness
-    if(ncol(x)==1){
-      if(!is.null(side)) {
+      #Implement sidedness
+      if(ncol(x)==1){
+        if(!is.null(side)) {
 
-        if(side %in% c('l','r','b')){
-          s=seq_along(scores)
-          temp=cbind(cbind(x,scores),s)
-          temp=temp[order(temp[,1]),]
-          suppressWarnings({goodrange=range(which(temp[,2]>thresh))})
+          if(side %in% c('l','r','b')){
+            s=seq_along(scores)
+            temp=cbind(cbind(x,scores),s)
+            temp=temp[order(temp[,1]),]
+            suppressWarnings({goodrange=range(which(temp[,2]>thresh))})
 
-          if(side=='b'){
-            temp[(s>goodrange[1])&(s<goodrange[2]),2]=0
+            if(side=='b'){
+              temp[(s>goodrange[1])&(s<goodrange[2]),2]=0
+            }
+            if(side=='l'){
+              temp[(s>goodrange[1]),2]=0
+            }
+            if(side=='r'){
+              temp[(s<goodrange[2]),2]=0
+            }
+
+            scores=temp[order(temp[,3]),2]
+
           }
-          if(side=='l'){
-            temp[(s>goodrange[1]),2]=0
-          }
-          if(side=='r'){
-            temp[(s<goodrange[2]),2]=0
-          }
-
-          scores=temp[order(temp[,3]),2]
-
         }
       }
-    }
 
-    n=length(which(!is.na(scores)))
+      n=length(which(!is.na(scores)))
 
-    nmax=min(n,nmax)
+      nmax=min(n,nmax)
 
-    ind=order(scores,decreasing = TRUE)[1:nmax]
-    ind=ind[scores[ind]>thresh]
-  }#End of LOF
+      ind=order(scores,decreasing = TRUE)[1:nmax]
+      ind=ind[scores[ind]>thresh]
+    }#End of LOF
 
-  if(crit==2){
+    if(crit==2){
 
-    #In this method only the outliers on the sides are possible, so null side is treated simply as the two-sided test
-    #If the data is multidimensional, one-sided tests are not applied
-    if(is.null(side)|(ncol(x)>1)) side='b'
+      #In this method only the outliers on the sides are possible, so null side is treated simply as the two-sided test
+      #If the data is multidimensional, one-sided tests are not applied
+      if(is.null(side)|(ncol(x)>1)) side='b'
 
-    ind=c()
-    for( i in 1:nmax){
-      y=zscore(x,side=side)
+      ind=c()
+      for( i in 1:nmax){
+        y=zscore(x,side=side)
 
-      i_to_drop=which(apply(apply(y,2,grubbs1D,level=level,side=side),1,function(x){any(x,na.rm=TRUE)}))
-      if(length(i_to_drop)==0) break
+        i_to_drop=which(apply(apply(y,2,grubbs1D,level=level,side=side),1,function(x){any(x,na.rm=TRUE)}))
+        if(length(i_to_drop)==0) break
 
-      #Add the found index to the list and then populate that row of x with NA, to exclude it from next iteration.
-      ind=c(ind,i_to_drop)
-      x[i_to_drop,]=NA
-    }
+        #Add the found index to the list and then populate that row of x with NA, to exclude it from next iteration.
+        ind=c(ind,i_to_drop)
+        x[i_to_drop,]=NA
+      }
 
-  }#End of Grubbs
+    }#End of Grubbs
 
-
+  }else{
+    ind=integer(0)
+  }
 
 
 
